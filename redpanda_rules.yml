@@ -1,0 +1,20 @@
+groups:
+  - name: redpanda_alerts
+    rules:
+      - alert: RedpandaInstanceDown
+        expr: up{job="redpanda"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redpanda instance is down"
+          description: "Redpanda instance {{ $labels.instance }} has been down for more than 1 minute."
+
+      - alert: UnreadMessages
+        expr: redpanda_kafka_records_produced_total - redpanda_kafka_records_fetched_total > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Unread Messages Alert"
+          description: "There are {{ $value }} unread messages in the topic {{ $labels.redpanda_topic }} for more than 1 minute."
